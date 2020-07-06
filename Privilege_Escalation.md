@@ -2,7 +2,7 @@
 
 *"Hacking is not about exploits, hacking is using what you have"*
 
-## Objetivo
+## Objetivo
 
 El objetivo de realizar una escalada de privilegios no es otro que obtener una shell de root en el sistema. Para conseguir este fin puede ser tan fácil como usar un exploit de kernel, que el usuario root tenga como password toor o que se necesiten encadenar varios errores de configuración. 
 
@@ -26,7 +26,7 @@ Un sistema Linux tiene tres niveles:
 - Kernel: Core del sistema operativo. Reside en la memoria y le dice a la CPU que ha de hacer. El kernel es un interfaz entre el hardware y cualquier programa en ejecución
 - User space: Los programas que utiliza el usuario final, tales como las "shell" u otras aplicaciones con ventanas. Como es lógico estas aplicaciones necesitan interaccionar con el hardware del sistema, pero no lo hacen directamente, sino a través de las funciones que soporta el kernel.
 
-#### Kernel
+#### Kernel
 
 Principalmente se encarga de 4 tareas:
 
@@ -49,7 +49,7 @@ Asi que en el espacio de usuario:
 - Es donde las aplicaciones de los usuarios son ejecutadas.
 - Tambien es donde se encuentra la libreria GNU C (glibc)
 
-#### Diferencia esencial
+#### Diferencia esencial
 
 El kernel se ejecuta en modo "kernel mode" y tiene acceso "total" al procesador y a la memoria principal. Por lo tanto, es el dueño y señor del sistema. A la area donde solo puede acceder el Kernel se denomina Kernel Space
 
@@ -57,7 +57,7 @@ En cambio, los procesos que se ejecutan en user space se ejecutan de forma "rest
 
 Por lo tanto, si un proceso en user space se pudre, es facil que no tumbes el sistema, simplemente el kernel se hara cargo de ese proceso y lo "limpiara".
 
-#### Glibc
+#### Glibc
 
 Glibc es la librería C  proporciona y define las llamadas al sistema y otras funciones básicas utilizada por casi todos los programas como open, malloc, printf, etc. La librería C es utilizada por todos los programas enlazados dinámicamente. En los sistemas Linux se instala con el nombre de libc6.
 
@@ -194,7 +194,7 @@ En la respuesta el primer caracter indica que es:
 - (-):  file
 - d: directory
 
-### Ficheros /etc/passwd y /etc/shadow
+### Ficheros /etc/passwd y /etc/shadow
 
 #### Fichero /etc/passwd
 
@@ -620,7 +620,7 @@ Realmente, la unica ténica valida es Enumerar, enumerar más y darle vueltas a 
 
 En esta primera fase, se lleva a cabo una enumeración muy básica del terminal y se prueban algunas ideas locas por su simpleza
 
-#### ¿Quién soy, quién hay ahí?
+#### ¿Quién soy, quién hay ahí?
 
 ##### Objetivo
 
@@ -775,7 +775,7 @@ Conocer que puertos y servicios asociados estan activos
   - Lsoft lista los ficheros abiertos en el sistema. Otros comandos útiles: -p PID, -u Use, -c nombre_proceso, +D directorio/path concreto
 - iptables -L: Listar las reglas de iptables
 
-#### Bala de plata II: NFS
+#### Bala de plata II: NFS
 
 Tal y como se ha comentado antes, NFS no esta "diseñado" para ser seguro per se. En determinadas condiciones, es posible explotar su mala configuración y ser root.
 
@@ -846,11 +846,11 @@ Determinar que servicios se estan ejecutando, comprobar sus permisos y ver si ha
 
 #### ¿Qué información puedo obtener de Cron?
 
-##### Objetivo
+#### Objetivo
 
 Obtener todo la información posible sobre el servicio Cron.
 
-##### Instrucciones
+##### Instrucciones
 
 - crontab -l
 - ls -alh /var/spool/cron
@@ -1013,9 +1013,9 @@ Listar de forma recursiva /home y /root:
 - ls -ahlR /root/
 - ls -ahlR /home/
 
-#### ¿Qué sabemos de SSH?
+#### ¿Qué sabemos de SSH?
 
-##### Objetivo
+##### Objetivo
 
 Conseguir claves de conexión de SSH. Las claves SSH son la alternativa a los passwords SSH, siempre van en pareja y si no estan bien protegidas seria posible utilizarlas.
 
@@ -1338,7 +1338,7 @@ void inject() {
 
 $ gcc -shared -fPIC -o /home/user/.config/libcalc.so libcalc.c
 
-##### Bala de plata IX: 
+##### Bala de plata IX: 
 
 Ld_library 
 
