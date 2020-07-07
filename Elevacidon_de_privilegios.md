@@ -1,8 +1,6 @@
----
-description: '"Hacking is not about exploits, hacking is using what you have"'
----
 
 # Elevación de privilegios en Linux
+_"Hacking is not about exploits, hacking is using what you have"_
 
 ## Objetivo
 
