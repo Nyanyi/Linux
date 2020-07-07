@@ -48,7 +48,7 @@ Realmente, mucha de la acción que pasa en el sistema, se corresponde a procesos
 Así que en el espacio de usuario:
 
 * Es donde las aplicaciones de los usuarios son ejecutadas.
-* Tambiín es donde se encuentra la libreria GNU C \(glibc\)
+* También es donde se encuentra la libreria GNU C \(glibc\)
 
 #### Diferencia esencial
 
