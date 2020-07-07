@@ -228,7 +228,7 @@ La estructura es la siguiente:&lt;1&gt;&lt;2&gt;&lt;3&gt;&lt;4&gt;&lt;5&gt;&lt;6
 
 **Cifrado de password en linux**
 
-Para cifrar el password se utiliza una función estandar de C crypt basada en el algoritmo DES.
+Para cifrar el password se utiliza una función estándar de C crypt basada en el algoritmo DES.
 
 Un ejemplo:
 
@@ -247,7 +247,7 @@ _root@kali:/sbin\# mkpasswd -m sha-512 toor HMYZvkDT6BLDaeYV_: $6$HMYZvkDT6BLDae
 
 ### Directorio Proc
 
-El directivo proc contiene una jerarquía de archivos especiales que representan el estado actual del kernel. Se puede encontrar una ran cantidad de información con detalles sobre el hardware del sistema y cualquier proceso que se esté ejecutando. Los directorios que estan nombrados con un número se denominan directorios de proceso, ya que pyeden hacer referencia al ID de proceso y contener información especifica para ese proceso.
+El directivo proc contiene una jerarquía de archivos especiales que representan el estado actual del kernel. Se puede encontrar una ran cantidad de información con detalles sobre el hardware del sistema y cualquier proceso que se esté ejecutando. Los directorios que están nombrados con un número se denominan directorios de proceso, ya que pyeden hacer referencia al ID de proceso y contener información especifica para ese proceso.
 
 Cada uno de los directorios de procesos contiene los siguientes archivos:
 
