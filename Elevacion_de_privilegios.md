@@ -19,6 +19,7 @@ Los recursos consultados para llevar a cabo esta recopilación son:
 * [https://gtfobins.github.io](https://gtfobins.github.io/)
 * [https://book.hacktricks.xyz/linux-unix/linux-privilege-escalation-checklist](https://book.hacktricks.xyz/linux-unix/linux-privilege-escalation-checklist)
 * [https://www.udemy.com/course/linux-privilege-escalation/](https://www.udemy.com/course/linux-privilege-escalation/)
+* https://github.com/Ignitetechnologies/Privilege-Escalation
 
 ## Algo de teoría y conceptos clave
 
